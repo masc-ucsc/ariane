@@ -31,3 +31,7 @@ stdout/
 work-dpi/
 tb/riscv-isa-sim/
 work-*/*
+tb/dromajo/*
+runN.py
+tb/dromajo/run/*
+tb/dromajo/run/checkpoints/*
