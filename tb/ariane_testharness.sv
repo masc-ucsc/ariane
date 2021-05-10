@@ -698,6 +698,30 @@ module ariane_testharness #(
     .axi_resp_i           ( axi_ariane_resp     )
   );
 
+`ifdef TRACK_FPI
+
+  int fd_front_dump, fd_front_dump_status, fd_fpi_run_num, fd_fpi_run_num_status, fd_front_read, fd_front_read_status, fpi_run_num; //File descriptors for dumping icachedata, getting fpi run number and to read previously dumps
+  //Initialization 
+  initial begin
+    fd_fpi_run_num = $fopen("fpi_choice.txt", "r");
+    fd_fpi_run_num_status = $fscanf(fd_fpi_run_num, "%d", fpi_run_num);
+    //$display("\n\n run number  = %d", fpi_run_num);
+    if(fpi_run_num == 0) begin
+      fd_front_dump = $fopen("frontend_dump_0.txt", "w");
+    end
+    //add else part for run#1
+    end
+// i_ariane.issue_stage_i.i_scoreboard.scoreboard_cycles,
+  always_ff @( posedge clk_i or negedge ndmreset_n) begin 
+    $fwrite(fd_front_dump, "%d %h %h\n", i_ariane.i_frontend.frontend_cycles, i_ariane.i_frontend.icache_data, i_ariane.i_frontend.icache_dreq_i.vaddr);
+  end
+
+  final begin
+    $fclose(fd_front_dump);
+  end
+
+`endif 
+
   axi_master_connect i_axi_master_connect_ariane (
     .axi_req_i(axi_ariane_req),
     .axi_resp_o(axi_ariane_resp),

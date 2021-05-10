@@ -83,6 +83,19 @@ module scoreboard #(
 
   assign sb_full_o = issue_full;
 
+  //tracking flush of unissued instructions and local cycle counter
+/*`ifdef TRACK_FPI
+  logic [63:0] scoreboard_cycles;
+  initial begin
+    scoreboard_cycles <= 0;
+  end
+
+  always_ff @( posedge clk_i or negedge rst_ni ) begin 
+    scoreboard_cycles <= scoreboard_cycles + 1;    
+  end
+
+`endif */
+
   // output commit instruction directly
   always_comb begin : commit_ports
     for (int unsigned i = 0; i < NR_COMMIT_PORTS; i++) begin

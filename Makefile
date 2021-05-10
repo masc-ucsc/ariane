@@ -388,6 +388,7 @@ verilate_command := $(verilator)                                                
                     -Wno-style                                                                                   \
                     $(if $(DROMAJO), -DDROMAJO=1,)                                                               \
                     $(if $(PROFILE),--stats --stats-vars --profile-cfuncs,)                                      \
+                    $(if $(TRACK_FPI), -DTRACK_FPI=1)                                                            \
                     $(if $(DEBUG),--trace --trace-structs,)                                                      \
                     -LDFLAGS "-L$(RISCV)/lib -Wl,-rpath,$(RISCV)/lib -lfesvr$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -L../tb/dromajo/src -ldromajo_cosim,) -lpthread" \
                     -CFLAGS "$(CFLAGS)$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -DDROMAJO=1,)" -Wall --cc  --vpi \

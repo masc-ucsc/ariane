@@ -37,3 +37,5 @@ tb/dromajo/run/*
 tb/dromajo/run/checkpoints/*
 dump/*
 todo.txt
+fpi_choice.txt
+frontend_dump_*

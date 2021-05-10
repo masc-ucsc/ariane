@@ -46,6 +46,15 @@ module frontend #(
   output logic               fetch_entry_valid_o, // instruction in IF is valid
   input  logic               fetch_entry_ready_i  // ID acknowledged this instruction
 );
+    //FPI cycles counter
+`ifdef TRACK_FPI
+    logic [63:0] frontend_cycles;
+    initial begin
+      frontend_cycles <= 0;
+    end
+
+`endif 
+    
     // Instruction Cache Registers, from I$
     logic [FETCH_WIDTH-1:0] icache_data_q;
     logic                   icache_valid_q;
@@ -345,6 +354,10 @@ module frontend #(
           bht_q                <= bht_prediction[INSTR_PER_FETCH-1];
         end
       end
+      //Adding frontend dump code
+`ifdef TRACK_FPI
+      frontend_cycles <= frontend_cycles + 1;
+`endif       
     end
 
     ras #(
