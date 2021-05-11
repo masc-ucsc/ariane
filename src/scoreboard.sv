@@ -64,6 +64,20 @@ module scoreboard #(
 );
   localparam int unsigned BITS_ENTRIES = $clog2(NR_ENTRIES);
 
+    //tracking flush of unissued instructions and local cycle counter
+`ifdef TRACK_FPI
+  logic [63:0] scoreboard_cycles;
+  
+  initial begin
+    scoreboard_cycles <= 0;
+  end
+
+  always_ff @( posedge clk_i or negedge rst_ni ) begin 
+    scoreboard_cycles <= scoreboard_cycles + 1;    
+  end
+
+`endif
+
   // this is the FIFO struct of the issue queue
   struct packed {
     logic                          issued;         // this bit indicates whether we issued this instruction e.g.: if it is valid
@@ -82,19 +96,6 @@ module scoreboard #(
   assign issue_full = &issue_cnt_q;
 
   assign sb_full_o = issue_full;
-
-  //tracking flush of unissued instructions and local cycle counter
-/*`ifdef TRACK_FPI
-  logic [63:0] scoreboard_cycles;
-  initial begin
-    scoreboard_cycles <= 0;
-  end
-
-  always_ff @( posedge clk_i or negedge rst_ni ) begin 
-    scoreboard_cycles <= scoreboard_cycles + 1;    
-  end
-
-`endif */
 
   // output commit instruction directly
   always_comb begin : commit_ports

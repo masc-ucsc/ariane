@@ -701,6 +701,7 @@ module ariane_testharness #(
 `ifdef TRACK_FPI
 
   int fd_front_dump, fd_front_dump_status, fd_fpi_run_num, fd_fpi_run_num_status, fd_front_read, fd_front_read_status, fpi_run_num; //File descriptors for dumping icachedata, getting fpi run number and to read previously dumps
+  int fd_score_dump, fd_score_dump_status; //file descriptors for dumping scoreboard flush unissued
   //Initialization 
   initial begin
     fd_fpi_run_num = $fopen("fpi_choice.txt", "r");
@@ -708,13 +709,34 @@ module ariane_testharness #(
     //$display("\n\n run number  = %d", fpi_run_num);
     if(fpi_run_num == 0) begin
       fd_front_dump = $fopen("frontend_dump_0.txt", "w");
+      fd_score_dump = $fopen("scoreboard_dump_0.txt", "w");
     end
     //add else part for run#1
     end
 // i_ariane.issue_stage_i.i_scoreboard.scoreboard_cycles,
+//dumping frontend stuff;
   always_ff @( posedge clk_i or negedge ndmreset_n) begin 
-    $fwrite(fd_front_dump, "%d %h %h\n", i_ariane.i_frontend.frontend_cycles, i_ariane.i_frontend.icache_data, i_ariane.i_frontend.icache_dreq_i.vaddr);
+    $fwrite(fd_front_dump, "%d %d %h %h\n", i_ariane.i_frontend.frontend_cycles, i_ariane.issue_stage_i.i_scoreboard.scoreboard_cycles, i_ariane.i_frontend.icache_data, i_ariane.i_frontend.icache_dreq_i.vaddr);
   end
+//dumping scoreboard stuff;
+/*  always_ff @( posedge i_ariane.issue_stage_i.i_scoreboard.flush_unissued_instr_i ) begin 
+    for(int i=0; i<i_ariane.issue_stage_i.i_scoreboard.NR_ENTRIES; i++) begin
+      if(!i_ariane.issue_stage_i.i_scoreboard.mem_q[i].issued) begin
+        $fwrite(fd_score_dump, "%d %d %h")
+      end
+    end
+  end*/
+
+  always_ff @(posedge i_ariane.issue_stage_i.i_scoreboard.flush_unissued_instr_i) begin
+    if(i_ariane.issue_stage_i.i_scoreboard.flush_unissued_instr_i && i_ariane.issue_stage_i.i_scoreboard.resolved_branch_i.is_mispredict) begin
+      for(int i = 0; i < i_ariane.issue_stage_i.i_scoreboard.NR_ENTRIES; i++) begin
+        if(!i_ariane.issue_stage_i.i_scoreboard.mem_q[i].issued) begin
+          $fwrite(fd_score_dump, "%d %d %h %h\n", i_ariane.i_frontend.frontend_cycles, i_ariane.issue_stage_i.i_scoreboard.scoreboard_cycles, i_ariane.issue_stage_i.i_scoreboard.mem_q[i].sbe.pc, i_ariane.issue_stage_i.i_scoreboard.mem_q[i].sbe.ex.tval[63:0]);
+        end
+      end
+    end
+  end  
+
 
   final begin
     $fclose(fd_front_dump);
