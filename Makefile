@@ -375,7 +375,6 @@ verilate_command := $(verilator)                                                
                     src/util/sram.sv                                                                             \
                     tb/common/mock_uart.sv                                                                       \
                     +incdir+src/axi_node                                                                         \
-                    $(if $(verilator_threads), --threads $(verilator_threads))                                   \
                     --unroll-count 256                                                                           \
                     -Werror-PINMISSING                                                                           \
                     -Werror-IMPLICIT                                                                             \
@@ -388,6 +387,7 @@ verilate_command := $(verilator)                                                
                     -Wno-BLKANDNBLK                                                                              \
                     -Wno-style                                                                                   \
                     $(if $(DROMAJO), -DDROMAJO=1,)                                                               \
+                    $(if $(TRACK_FPI), -TRACK_FPI=1,)                                                            \
                     $(if $(PROFILE),--stats --stats-vars --profile-cfuncs,)                                      \
                     $(if $(DEBUG),--trace --trace-structs,)                                                      \
                     -LDFLAGS "-L$(RISCV)/lib -Wl,-rpath,$(RISCV)/lib -lfesvr$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -L../tb/dromajo/src -ldromajo_cosim,) -lpthread" \
@@ -395,7 +395,7 @@ verilate_command := $(verilator)                                                
                     $(list_incdir) --top-module ariane_testharness                                               \
                     --Mdir $(ver-library) -O3                                                                    \
                     --exe tb/ariane_tb.cpp tb/dpi/SimDTM.cc tb/dpi/SimJTAG.cc                                    \
-					tb/dpi/remote_bitbang.cc tb/dpi/msim_helper.cc $(if $(DROMAJO), tb/dpi/dromajo_cosim_dpi.cc,)
+  tb/dpi/remote_bitbang.cc tb/dpi/msim_helper.cc $(if $(DROMAJO), tb/dpi/dromajo_cosim_dpi.cc,)
 
 dromajo:
 	cd ./tb/dromajo/src && make
