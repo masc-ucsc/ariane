@@ -387,7 +387,7 @@ verilate_command := $(verilator)                                                
                     -Wno-BLKANDNBLK                                                                              \
                     -Wno-style                                                                                   \
                     $(if $(DROMAJO), -DDROMAJO=1,)                                                               \
-                    $(if $(TRACK_FPI), -TRACK_FPI=1,)                                                            \
+                    $(if $(TRACK_FPI), -DTRACK_FPI=1,)                                                            \
                     $(if $(PROFILE),--stats --stats-vars --profile-cfuncs,)                                      \
                     $(if $(DEBUG),--trace --trace-structs,)                                                      \
                     -LDFLAGS "-L$(RISCV)/lib -Wl,-rpath,$(RISCV)/lib -lfesvr$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -L../tb/dromajo/src -ldromajo_cosim,) -lpthread" \
@@ -461,7 +461,7 @@ checkpoint_dromajo:
 verilate: $(if $(DROMAJO), dromajo,)
 	@echo "[Verilator] Building Model$(if $(PROFILE), for Profiling,)"
 	$(verilate_command)
-	cd $(ver-library) && $(MAKE) -j${NUM_JOBS} -f Variane_testharness.mk
+	cd $(ver-library) && $(MAKE) -f Variane_testharness.mk
 
 sim-verilator: verilate
 	$(ver-library)/Variane_testharness $(elf-bin)

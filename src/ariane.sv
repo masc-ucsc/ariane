@@ -805,6 +805,9 @@ module ariane #(
 
   initial begin
     f = $fopen("trace_hart_00.dasm", "w");
+`ifdef TRACK_FPI
+    $fwrite(f,"\t\t********TRACK FPI ENABLED********\n");
+`endif 
   end
 
 `ifdef DROMAJO
