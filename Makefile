@@ -398,7 +398,7 @@ verilate_command := $(verilator)                                                
   tb/dpi/remote_bitbang.cc tb/dpi/msim_helper.cc $(if $(DROMAJO), tb/dpi/dromajo_cosim_dpi.cc,)
 
 dromajo:
-	cd ./tb/dromajo/src && make
+	cd ./tb/dromajo/build_trace && make
 
 run-dromajo-verilator:
 	$(if $(BIN), $(MAKE) checkpoint_dromajo, $(error "Please provide absolute path to the binary. Usage: make run_dromajo BIN=/absolute/path/to/binary"))
@@ -452,7 +452,7 @@ checkpoint_dromajo:
 	  \"uart_base_addr\": 0x10000000,\n\
 	  \"uart_size\": 0x1000\n\
   }" > "$(notdir $(BIN)).cfg" && \
-  ../../../src/dromajo --save=$(notdir $(BIN)) --save_format=1 ./$(notdir $(BIN))_boot.cfg && \
+  ../../../build_trace/dromajo --save=$(notdir $(BIN)) --save_format=1 ./$(notdir $(BIN))_boot.cfg && \
   cd ../../../../../ && \
 	./work-ver/Variane_testharness +checkpoint=$(shell pwd)/tb/dromajo/run/checkpoints/$(notdir $(BIN))/$(notdir $(BIN))
 
